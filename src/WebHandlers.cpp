@@ -7,6 +7,7 @@ extern Audio audio;
 void handleSpeak() {
   String text;
   String language = "en";
+  int volume = -1;  // -1 indicates no volume change requested
   
   if (server.method() == HTTP_POST) {
     if (server.hasArg("plain")) {
@@ -17,6 +18,9 @@ void handleSpeak() {
         if (doc.containsKey("language")) {
           language = doc["language"].as<String>();
         }
+        if (doc.containsKey("volume")) {
+          volume = doc["volume"].as<int>();
+        }
       }
     }
   } else if (server.method() == HTTP_GET) {
@@ -24,9 +28,15 @@ void handleSpeak() {
     if (server.hasArg("language")) {
       language = server.arg("language");
     }
+    if (server.hasArg("volume")) {
+      volume = server.arg("volume").toInt();
+    }
   }
   
   if (text.length() > 0) {
+    if (volume >= 0 && volume <= 10) {
+      audio.setVolume(volume);
+    }
     audio.connecttospeech(text.c_str(), language.c_str());
     
     String response;
@@ -34,6 +44,9 @@ void handleSpeak() {
     respDoc["status"] = "speaking";
     respDoc["text"] = text;
     respDoc["language"] = language;
+    if (volume >= 0) {
+      respDoc["volume"] = volume;
+    }
     serializeJson(respDoc, response);
     server.send(200, "application/json", response);
   } else {
