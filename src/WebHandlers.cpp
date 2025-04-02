@@ -4,6 +4,10 @@
 extern WebServer server;
 extern Audio audio;
 
+// Reuse JsonDocument to save memory
+JsonDocument doc;
+JsonDocument respDoc;
+
 void handleSpeak() {
   String text;
   String language = "en";
@@ -11,14 +15,13 @@ void handleSpeak() {
   
   if (server.method() == HTTP_POST) {
     if (server.hasArg("plain")) {
-      StaticJsonDocument<512> doc;
       DeserializationError error = deserializeJson(doc, server.arg("plain"));
-      if (!error && doc.containsKey("text")) {
+      if (!error && doc["text"].is<String>()) {
         text = doc["text"].as<String>();
-        if (doc.containsKey("language")) {
+        if (doc["language"].is<String>()) {
           language = doc["language"].as<String>();
         }
-        if (doc.containsKey("volume")) {
+        if (doc["volume"].is<int>()) {
           volume = doc["volume"].as<int>();
         }
       }
@@ -40,17 +43,17 @@ void handleSpeak() {
     audio.connecttospeech(text.c_str(), language.c_str());
     
     String response;
-    StaticJsonDocument<200> respDoc;
-    respDoc["status"] = "speaking";
-    respDoc["text"] = text;
-    respDoc["language"] = language;
+    respDoc.clear();  // Clear previous data
+    respDoc[F("status")] = F("speaking");
+    respDoc[F("text")] = text;
+    respDoc[F("language")] = language;
     if (volume >= 0) {
-      respDoc["volume"] = volume;
+      respDoc[F("volume")] = volume;
     }
     serializeJson(respDoc, response);
-    server.send(200, "application/json", response);
+    server.send(200, F("application/json"), response);
   } else {
-    server.send(400, "application/json", "{\"error\": \"Missing 'text' parameter\"}");
+    server.send(400, F("application/json"), F("{\"error\": \"Missing 'text' parameter\"}"));
   }
 }
 
@@ -59,9 +62,8 @@ void handleAudioFile() {
   
   if (server.method() == HTTP_POST) {
     if (server.hasArg("plain")) {
-      StaticJsonDocument<512> doc;
       DeserializationError error = deserializeJson(doc, server.arg("plain"));
-      if (!error && doc.containsKey("url")) {
+      if (!error && doc["url"].is<String>()) {
         url = doc["url"].as<String>();
       }
     }
@@ -73,12 +75,12 @@ void handleAudioFile() {
     audio.connecttohost(url.c_str());
     
     String response;
-    StaticJsonDocument<200> respDoc;
-    respDoc["status"] = "playing";
-    respDoc["url"] = url;
+    respDoc.clear();  // Clear previous data
+    respDoc[F("status")] = F("playing");
+    respDoc[F("url")] = url;
     serializeJson(respDoc, response);
-    server.send(200, "application/json", response);
+    server.send(200, F("application/json"), response);
   } else {
-    server.send(400, "application/json", "{\"error\": \"Missing 'url' parameter\"}");
+    server.send(400, F("application/json"), F("{\"error\": \"Missing 'url' parameter\"}"));
   }
 } 

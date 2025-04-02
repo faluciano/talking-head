@@ -6,13 +6,6 @@ WiFiMulti wifiMulti;
 const char* WIFI_SSID = "YOUR_WIFI_SSID";
 const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
 
-void setupPins() {
-  // Initialize SPI bus for microSD Card
-  // pinMode(SD_CS, OUTPUT);
-  // digitalWrite(SD_CS, HIGH);
-  // SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
-}
-
 bool setupWiFi() {
   WiFi.mode(WIFI_STA);
   wifiMulti.addAP(WIFI_SSID, WIFI_PASSWORD);

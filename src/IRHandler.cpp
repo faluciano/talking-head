@@ -57,7 +57,6 @@ void handleIRCommand(decode_results *results) {
       break;
     case 0xFF38C7:
       Serial.println("Ok hit");
-      audio.connecttospeech("Initiating self destruct sequence", "en");
       break;
     case 0xFF5AA5:
       Serial.println("Right arrow hit");

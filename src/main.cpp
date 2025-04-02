@@ -1,4 +1,3 @@
-#include <IRremoteESP8266.h>
 #include <IRrecv.h>
 #include <ArduinoJson.h>
 #include <WebServer.h>
@@ -20,9 +19,6 @@ TaskManager taskManager(irrecv, results, audio, server);
 void setup()
 {
   Serial.begin(115200);
-
-  // Setup pins
-  setupPins();
 
   // Setup WiFi
   if (!setupWiFi()) {
