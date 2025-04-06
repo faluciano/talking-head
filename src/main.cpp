@@ -1,10 +1,5 @@
-#include <IRrecv.h>
-#include <ArduinoJson.h>
-#include <WebServer.h>
 #include "Arduino.h"
 #include "Audio.h"
-#include "SD.h"
-#include "FS.h"
 #include "Config.h"
 #include "WebHandlers.h"
 #include "IRHandler.h"
